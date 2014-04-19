@@ -22,6 +22,8 @@ extern const uint8_t FlashnumberSlaveModules;
 /** 
  *  \struct <TRC1180Config>
  *  \brief Konfiguracja modu³u RC1180
+ 
+ Ka¿da zmienna to tablica. Pierwszy element to adres eeprom w module RC1180 drugi to ustawiona wartoœc patrz pdf  RC1180(rc232)
  */
 
 typedef struct RC1180Config{

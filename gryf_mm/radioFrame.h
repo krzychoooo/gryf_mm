@@ -16,7 +16,13 @@ extern volatile uint8_t inFrameBufferWrIndex;
 extern volatile uint8_t inFrameBufferRdIndex;
 extern uint8_t inFrameBuffer[INFRAMERADIOBUFFERSIZE];
 
-void sendAskFrameRadio(uint8_t didAddress1);
+/*! fn void sendAlarmFrameRadio()
+\brief wysy³a ramkê z zdarzeniami
+
+*/
+void sendAlarmFrameRadio();
+
+
 /*! fn uint8_t getFrameRadio()
 * \brief odbiera ramkê radiow¹
 

@@ -134,12 +134,6 @@
     <Compile Include="radio_config.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="rs485Frame.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="rs485Frame.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="timer0x.c">
       <SubType>compile</SubType>
     </Compile>
