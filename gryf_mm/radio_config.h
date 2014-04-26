@@ -35,6 +35,8 @@ typedef struct RC1180Config{
 							*/
 	uint8_t brAddress[2];	/**  \var TRC1180Config#brAddress[2];
 							*  Member brAddress zawiera adres rozg³oszeniowy*/
+	uint8_t sysAddress[2];	/** \var sysAddress[2];
+							* Member sysAddress zawiera system id*/
 	uint8_t bRateRS232[2];	/**  \var TRC1180Config#bRateRS232[2];
 							*  Member bRateRS232 zawiera szybkoœæ transmisji rs232*/
 	uint8_t bRateRadio[2];	/**  \var TRC1180Config#bRateRadio[2];
@@ -51,21 +53,26 @@ typedef struct RC1180Config{
 							*  Member endChar zawiera znak po którym nast¹pi wys³anie ramki*/
 	uint8_t addressMode[2];	/**  \var TRC1180Config#addressMode[2];
 							*  Member addressMode zawiera tryb adresowania RC1180 */
+	uint8_t packet_lenght_h[2]; /** \var TRC1180Config#packet_lenght_h[2];
+							* Member Max packet	length high	byte. */
+	uint8_t packet_lenght_l[2]; /** \var TRC1180Config#packet_lenght_l[2];
+							* Member Max packet	length low	byte. */
+	uint8_t modemTimeOut[2];	/* \var uint8_t modemTimeOut[2];
+							* Member Time before modem timeout and transmitting the buffer 1 -> 16ms */
 } TRC1180Config;
 //#define CONFIGSIZE 11;
+
+extern TRC1180Config rc1180ConfigRam;
 
 void radioRC1180Init();
 void setDestinationAddres(uint8_t destAddress);;
 uint8_t sendCommandToRC1180(uint8_t command, uint8_t data);
 void programMemoryRC1180(uint8_t *data, uint8_t numberData);
-void copyConfigEEpromToRam();
-void copyConfigRamToEEprom();
-void copyConfigFlashToRam();
+void copyConfigRadioEEpromToRam();
+void copyConfigRadioRamToEEprom();
+void copyConfigRadioFlashToRam();
 void setRC1180FromConfigRam();
 void userSetRC1180(void);
-void copyApplicationSetingFromFlashToRam();
-void copyApplicationSetingFromEepromToRam();
-void copyApplicationSetingFromRamToEeprom();
 
 
 #endif /* RADIO_CONFIG_H_ */

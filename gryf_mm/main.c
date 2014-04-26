@@ -18,8 +18,7 @@
 #include "timer0x.h"
 #include "radio_config.h"
 #include "radioFrame.h"
-#include "rs485Frame.h"
-
+#include "moduleConfig.h"
 
 FILE mystdout = FDEV_SETUP_STREAM(putchard0Stream, NULL, _FDEV_SETUP_WRITE);
 FILE mystdin = FDEV_SETUP_STREAM(NULL, getchard0, _FDEV_SETUP_READ);
@@ -27,13 +26,22 @@ FILE mystdin = FDEV_SETUP_STREAM(NULL, getchard0, _FDEV_SETUP_READ);
 volatile uint8_t timer10ms;
 uint8_t addressMd;
 
-void enterSetup(){
-	printf("%cNaciœnij spacjê\n",12);
+void tryEnterRadioSetup(){
+	printf("%cKonfiguracja radia. Naciœnij spacjê\n",12);
 	if((char) (getchard0Time((uint8_t) 255)) == ' '){
 		userSetRC1180();
-		userSetRs485();
 	}
 }
+
+void tryEnterModuleSetup(){
+	printf("%cKonfiguracja modu³u. Naciœnij spacjê\n",12);
+	if((char) (getchard0Time((uint8_t) 255)) == ' '){
+		userSetRC1180();
+	}
+}
+
+
+
 
 int main()
 {
@@ -63,7 +71,6 @@ int main()
 	PMIC.CTRL=n;
 	// Set the default priority for round-robin scheduling
 		PMIC.INTPRI=0x00;
-		// Restore optimization for size if needed
 
 		system_clocks_init();
 		usartc0_init();
@@ -73,11 +80,9 @@ int main()
 		PORTC.DIRSET = 0X38 + 0x02 + 0x01;
 		PORTA.DIRSET = 0X20;
 		PORTD.DIRSET = 0X38;
-//		CONFIG_RADIO_DIR_OUT;
 
 		asm("sei");
 
-//		_delay_ms(10);
 		CONFIG_RADIO_OFF;
 //		putcharc0('X');
 //		_delay_ms(100);
@@ -89,28 +94,32 @@ int main()
 		if(debugMode)printf("hello\n");
 
 //Setting RC1180
-		RESET_RADIO_OFF;
+		RESET_RADIO_ACTIVE;
 		_delay_ms(5);
-		RESET_RADIO_ON;
+		RESET_RADIO_INACTIVE;
 		_delay_ms(5);
 		LED1_OFF;
 
-		copyConfigRamToEEprom();
+		copyConfigRadioFlashToRam();
+//enter to user setup
+		tryEnterRadioSetup();				//próba ustawieñ parametrów w ram i skopiowanie do eeprom
+		copyConfigRadioEEpromToRam();
 		setRC1180FromConfigRam();
 
-//Setting RS485
-		copyModuleConfigEEpromToRam();
+//Module config
+		copyModuleConfigFlashToRam();
+		tryEnterModuleSetup();				//próba ustawieñ modu³u w ram i skopiowanie do eeprom
+		copyModuleConfigEEpromToRam();		
 
 //timer0 init
 		tcc0_init();
 		registerTimerInTimer0( &timer10ms);
 
-//enter to user setup
-		enterSetup();
+
 
 		simulateCounter=0;
 		while(1){
-			n = getFrameFromMc();
+			n = getFrameRadio();
 			if(debugMode)printf("%d ",n);
 			if( n == 0 ) {
 				LED1_ON;
@@ -118,7 +127,7 @@ int main()
 					simulateCounter=0;
 					alarmSimulate();
 				}
-				sendAlarmFrame();
+				sendAlarmFrameRadio();
 				LED1_OFF;
 			}
 			_delay_ms(1);

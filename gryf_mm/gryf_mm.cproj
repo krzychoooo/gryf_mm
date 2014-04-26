@@ -113,6 +113,12 @@
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="moduleConfig.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="moduleConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="my_func.c">
       <SubType>compile</SubType>
     </Compile>

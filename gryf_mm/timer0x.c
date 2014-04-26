@@ -8,9 +8,11 @@
 #include "timer0x.h"
 #include <util/atomic.h>
 #include "pcb.h"
+#include "radioFrame.h"
+#include "moduleConfig.h"
 
 volatile uint8_t *timer0T;
-volatile uint8_t ledTimer;
+volatile uint8_t ledTimer, inputPortTimer, newInputValue, OldInputValue;
 
 // Timer/Counter TCC0 initialization
 void tcc0_init(void)
@@ -33,8 +35,35 @@ void registerTimerInTimer0( volatile uint8_t * time){
 	timer0T = time;
 }
 
+
+uint8_t getInputValue(){
+	return 0;
+}
+
+
 // Timer/Counter TCC0 Overflow/Underflow interrupt service routine
 ISR (TCC0_OVF_vect)
 {
+	uint8_t xorData, inTemp, i;
 	if(*timer0T)(*timer0T)--;
+	inputPortTimer++;
+	if (inputPortTimer == 0){
+		newInputValue = getInputValue();
+		xorData = newInputValue ^ OldInputValue;
+		inTemp = newInputValue;
+		if (xorData){
+			for(i=0; i != 4; i++){			//4 - number input data pins
+				if (xorData & 0x01){
+					if (inTemp & 0x01){
+						outFrameBuffer[outFrameBufferWrIndex] = moduleConfigRam.returnAlarmCode[i];
+					}else{
+						outFrameBuffer[outFrameBufferWrIndex] = moduleConfigRam.alarmCode[i];
+					}
+					indexIncrement(&outFrameBufferWrIndex, OUTFRAMERADIOBUFFERSIZE);		//uwaga zrobiæ ograniczenie na buffor len 
+				}
+				xorData = xorData>>1;
+				inTemp = inTemp>>1;
+			}
+		}
+	}
 }
