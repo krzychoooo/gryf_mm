@@ -3,7 +3,9 @@
  *
  *  Created on: 18 gru 2013
  *      Author: krzysztof
+ * mod 27_IV_16:54
  */
+ 
 
 #include <avr/io.h>
 #include <util/delay.h>

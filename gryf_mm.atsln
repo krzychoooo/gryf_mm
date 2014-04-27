@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "gryf_mm", "gryf_mm\gryf_mm.cproj", "{0FF729B1-FCB2-4860-8750-B43597CD19D0}"
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "gryf_mm", "gryf_mm\gryf_mm.cproj", "{9A394D7C-8507-4BF9-91A6-E24C0FD8EBE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|AVR = Release|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0FF729B1-FCB2-4860-8750-B43597CD19D0}.Debug|AVR.ActiveCfg = Debug|AVR
-		{0FF729B1-FCB2-4860-8750-B43597CD19D0}.Debug|AVR.Build.0 = Debug|AVR
-		{0FF729B1-FCB2-4860-8750-B43597CD19D0}.Release|AVR.ActiveCfg = Release|AVR
-		{0FF729B1-FCB2-4860-8750-B43597CD19D0}.Release|AVR.Build.0 = Release|AVR
+		{9A394D7C-8507-4BF9-91A6-E24C0FD8EBE0}.Debug|AVR.ActiveCfg = Debug|AVR
+		{9A394D7C-8507-4BF9-91A6-E24C0FD8EBE0}.Debug|AVR.Build.0 = Debug|AVR
+		{9A394D7C-8507-4BF9-91A6-E24C0FD8EBE0}.Release|AVR.ActiveCfg = Release|AVR
+		{9A394D7C-8507-4BF9-91A6-E24C0FD8EBE0}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
