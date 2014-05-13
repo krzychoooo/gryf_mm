@@ -35,9 +35,19 @@ void registerTimerInTimer0( volatile uint8_t * time){
 	timer0T = time;
 }
 
-
 uint8_t getInputValue(){
-	return 0;
+	uint8_t data,i;
+	
+	data = PORTD.IN & 0x03;
+	data = data<<2;
+	i = PORTC.IN & 0XC0;
+	i = i>>6;
+	data |= i;
+	//data = PORTC.IN & 0XC0;
+	//data = data>>4;
+	//data |= PORTD.IN & 0x03;
+
+	return data;
 }
 
 
@@ -46,8 +56,9 @@ ISR (TCC0_OVF_vect)
 {
 	uint8_t xorData, inTemp, i;
 	if(*timer0T)(*timer0T)--;
-	inputPortTimer++;
+	inputPortTimer--;
 	if (inputPortTimer == 0){
+		inputPortTimer = 100;
 		newInputValue = getInputValue();
 		xorData = newInputValue ^ OldInputValue;
 		inTemp = newInputValue;
@@ -59,11 +70,14 @@ ISR (TCC0_OVF_vect)
 					}else{
 						outFrameBuffer[outFrameBufferWrIndex] = moduleConfigRam.alarmCode[i];
 					}
-					indexIncrement(&outFrameBufferWrIndex, OUTFRAMERADIOBUFFERSIZE);		//uwaga zrobiæ ograniczenie na buffor len 
+					outFrameBufferWrIndex++;
+					if(outFrameBufferWrIndex==OUTFRAMERADIOBUFFERSIZE)outFrameBufferWrIndex=0;
 				}
 				xorData = xorData>>1;
 				inTemp = inTemp>>1;
 			}
+			OldInputValue = newInputValue;
 		}
+		
 	}
 }

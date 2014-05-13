@@ -8,6 +8,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "usartc0.h"
+#include "usartd0.h"
 #include "xmega_baud.h"
 #include "../pcb.h"
 volatile uint8_t *timerc0;
@@ -127,6 +128,7 @@ int getcharc0Time(uint8_t time) {
 	--rx_counter_usartc0;
 	asm("sei");
 	data |= 0x0100;			// faktycznie zosta³ odebrany znak
+	//putchard0(data);
 	return data;
 }
 

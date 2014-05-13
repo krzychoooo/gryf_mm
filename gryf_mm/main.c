@@ -29,7 +29,7 @@ volatile uint8_t timer10ms;
 uint8_t addressMd;
 
 void tryEnterRadioSetup(){
-	printf("%cKonfiguracja radia. Naciœnij spacjê\n",12);
+	printf("%cKonfiguracja radia. Nacisnij spacjê\n",12);
 	if((char) (getchard0Time((uint8_t) 255)) == ' '){
 		userSetRC1180();
 	}
@@ -38,7 +38,7 @@ void tryEnterRadioSetup(){
 void tryEnterModuleSetup(){
 	printf("%cKonfiguracja modu³u. Naciœnij spacjê\n",12);
 	if((char) (getchard0Time((uint8_t) 255)) == ' '){
-		userSetRC1180();
+		userSetModule();
 	}
 }
 
@@ -49,7 +49,6 @@ int main()
 {
 	unsigned char n;
 	uint8_t debugMode;
-	uint16_t simulateCounter;
 
 	debugMode = 1;
 
@@ -82,16 +81,24 @@ int main()
 		PORTC.DIRSET = 0X38 + 0x02 + 0x01;
 		PORTA.DIRSET = 0X20;
 		PORTD.DIRSET = 0X38;
+		PORTD.PIN0CTRL = PORT_OPC_PULLUP_gc;
+		PORTD.PIN1CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN6CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN7CTRL = PORT_OPC_PULLUP_gc;
+		
+//timer0 init
+		tcc0_init();
+		registerTimerInTimer0( &timer10ms);
 
+		registerTimerd0(&timer10ms);
+		registerTimerc0(&timer10ms);
+		registerTimere0(&timer10ms);	
+			
 		asm("sei");
 
 		CONFIG_RADIO_OFF;
 //		putcharc0('X');
 //		_delay_ms(100);
-
-		registerTimerd0(&timer10ms);
-		registerTimerc0(&timer10ms);
-		registerTimere0(&timer10ms);
 
 		if(debugMode)printf("hello\n");
 
@@ -102,39 +109,31 @@ int main()
 		_delay_ms(5);
 		LED1_OFF;
 
-		copyConfigRadioFlashToRam();
+//		copyConfigRadioFlashToRam();
+		copyConfigRadioEEpromToRam();
 //enter to user setup
 		tryEnterRadioSetup();				//próba ustawieñ parametrów w ram i skopiowanie do eeprom
 		copyConfigRadioEEpromToRam();
 		setRC1180FromConfigRam();
 
 //Module config
-		copyModuleConfigFlashToRam();
+//		copyModuleConfigFlashToRam();
+		copyModuleConfigEEpromToRam();		
 		tryEnterModuleSetup();				//próba ustawieñ modu³u w ram i skopiowanie do eeprom
 		copyModuleConfigEEpromToRam();		
-
-//timer0 init
-		tcc0_init();
-		registerTimerInTimer0( &timer10ms);
-
-
-
-		simulateCounter=0;
+		
+		printf("PRACA\n\r");
 		while(1){
 			n = getFrameRadio();
-			if(debugMode)printf("%d ",n);
+			
 			if( n == 0 ) {
+				if(debugMode)printf("gf=%d\n\r",n);
 				LED1_ON;
-				if(simulateCounter++ == 3000){
-					simulateCounter=0;
-					alarmSimulate();
-				}
 				sendAlarmFrameRadio();
 				LED1_OFF;
 			}
 			_delay_ms(1);
 		}
-
 }
 
 

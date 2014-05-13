@@ -103,7 +103,8 @@ if ((status & (USART_FERR_bm | USART_PERR_bm | USART_BUFOVF_bm)) == 0)
 
 
 
-int getchard0(FILE *stream)
+//int getchard0(FILE *stream)
+int getchard0()
 {
 int data;
 

@@ -12,13 +12,14 @@
 #include "radioFrame.h"
 #include "radio_config.h"
 #include "USART/usartc0.h"
+#include "usart/usartd0.h"
 #include "timer0x.h"
 #include <stdlib.h>
+#include <util/delay.h>
 
 volatile uint8_t outFrameBufferWrIndex;
 volatile uint8_t outFrameBufferRdIndex;
 uint8_t outFrameBuffer[OUTFRAMERADIOBUFFERSIZE];		// sk³adowane s¹ adresy i kody zdarzeñ z modu³ów które zosta³y odpytane
-
 
 /*! \fn uint8_t lenData
 * \brief calculate how many data read
@@ -34,7 +35,7 @@ uint8_t lenData(uint8_t wrIndex, uint8_t rdIndex,uint8_t bufLen){
 }
 
 
-void indexIncrement(volatile uint8_t* index, uint8_t len){
+void indexIncrement(volatile uint8_t *index, uint8_t len){
 	*index++;
 	if (*index == len){
 		*index = 0;
@@ -45,6 +46,8 @@ void indexIncrement(volatile uint8_t* index, uint8_t len){
 void sendAlarmFrameRadio(){
 	uint8_t i;
 
+	setDestinationAddres(0);
+	_delay_ms(5);
 	putcharc0(0);									//destination address
 	putcharc0(rc1180ConfigRam.uIAddress[1]);		//source address
 	//putcharc0(lenData(outFrameBufferWrIndex, outFrameBufferRdIndex, OUTFRAMERADIOBUFFERSIZE));	//sprawdziæ czy da siê tak zrobiæ aby RC1180 wysy³a³ automatycznie zmienn¹ d³ugoœæ ramki
@@ -55,7 +58,8 @@ void sendAlarmFrameRadio(){
 	}
 	for(i=0; i!=1; i++){
 			putcharc0(outFrameBuffer[outFrameBufferRdIndex]);
-			indexIncrement(&outFrameBufferRdIndex, OUTFRAMERADIOBUFFERSIZE);
+			outFrameBufferRdIndex++;
+			if(outFrameBufferRdIndex == OUTFRAMERADIOBUFFERSIZE)outFrameBufferRdIndex = 0;
 	}
 }
 
@@ -72,26 +76,67 @@ void alarmSimulate(void){
 
 uint8_t getFrameRadio() {
 
-	uint8_t i;
+	uint8_t i,data;
 	uint16_t iData;
 
 	if (rx_counter_usartc0) {
 		iData = getcharc0Time(10);			//destination address == my addres
-		if ((iData & 0x0100) == 0)
-			return 1;						// no data in buffer
-		if (iData != rc1180ConfigRam.uIAddress[1])
+		data = (uint8_t) iData;
+		if (data != rc1180ConfigRam.uIAddress[1])
 		{
 			return 4;						//frame OK but not my address
 		}
 		iData = getcharc0Time(10);			// sender radio address
-		iData = getcharc0Time(10);			
+		
+		iData = getcharc0Time(10);			//  command
+				
 		i = (uint8_t) iData;
 		if (i != '?'){
 			return 2;						// all OK but uncknow command
+		}
+
+		iData = getcharc0Time(10);			//get 0
+
+		iData = getcharc0Time(10);			// get rssi
+		printf("P%d ",((uint8_t)iData)/2);
+		while(rx_counter_usartc0){			// clear buffer
+			iData = getcharc0Time(10);
 		}
 		return 0;
 	} else
 		return 1;
 }
 
+uint8_t newgetFrameRadio() {
 
+	uint8_t i,data, errorCode;
+	uint16_t iData;
+
+	errorCode = 0;
+	if (rx_counter_usartc0) {
+		iData = getcharc0Time(10);			//destination address == my addres
+		data = (uint8_t) iData;
+		if (data != rc1180ConfigRam.uIAddress[1])
+		{
+			errorCode |= 1<<4;						//frame OK but not my address
+		}
+		iData = getcharc0Time(10);			// sender radio address
+		
+		iData = getcharc0Time(10);			//  command
+		
+		i = (uint8_t) iData;
+		if (i != '?'){
+			errorCode |= 1<<2;						// all OK but uncknow command
+		}
+
+		iData = getcharc0Time(10);			//get 0
+
+		iData = getcharc0Time(10);			// get rssi
+		printf("P%d ",((uint8_t)iData)/2);
+		while(rx_counter_usartc0){			// clear buffer
+			iData = getcharc0Time(10);
+		}
+		return errorCode;
+	} else
+	return 1;
+}

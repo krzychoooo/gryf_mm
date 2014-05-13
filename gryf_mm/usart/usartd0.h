@@ -19,7 +19,8 @@ void usartd0_init();
 // USARTD0 Receiver buffer
 #define RX_BUFFER_SIZE_USARTD0 8
 
-int getchard0(FILE *stream);
+//int getchard0(FILE *stream);
+int getchard0();
 void registerTimerd0(volatile uint8_t* t);
 char getchard0Time(uint8_t time);
 
@@ -31,5 +32,6 @@ char getchard0Time(uint8_t time);
 
 void putchard0(char c);
 int putchard0Stream(char c, FILE *stream);
+
 
 #endif /* USARTD0_H_ */
