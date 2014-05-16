@@ -1,4 +1,12 @@
-/Release
+*.eep
+*.elf
+*.lss
+*.map
+*.srec
+*.d
+*.o
+Makefile
+*.mk
 gryf_mm/Debug/
 gryf_mm/doxySettings.xml
 gryf_mm/doxyfile

@@ -193,7 +193,8 @@ void userSetRC1180(void) {
 	uint16_t getData;
 	//	uint8_t *ptr;
 
-	
+	printf("\n\rcompilation date ");
+	printf(__DATE__);
 
 	while (1) {
 		printf("\n\r\n\rUSTAWIENIA RADIOWE\n\r");
